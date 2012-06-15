@@ -1,0 +1,62 @@
+1) Criar projeto
+rails new clientes
+
+2) Criar modelo no padrao rails
+rails g scaffold cliente vpsa_id:integer nome:string --skip-stylesheets
+
+3) Configuracao do paperclip
+gem "paperclip", "~> 3.0"
+bundle install
+Paperclip.options[:command_path] = "/usr/local/bin/"
+
+4) Adicionar foto ao modelo
+rails generate paperclip cliente foto
+has_attached_file :foto, :styles => { :medium => "300x300>", :thumb => "30x30>" }
+
+5) Atualizar banco de dados
+rake db:migrate
+
+6) Configurar o twitter bootstrap
+group :assets do
+  gem 'twitter-bootstrap-rails'
+end
+rails g bootstrap:install
+rails g bootstrap:themed clientes -f
+
+7) Ajustar o formulario de upload de arquivo e listagem
+:multipart => true
+<%= f.file_field :foto, :class => 'text_field' %>
+<%= image_tag @user.avatar.url(:thumb) %>
+
+8) Buscar terceiros do vpsa
+gem 'httparty'
+bundle install
+
+HTTParty.get('https://www.vpsa.com.br/vpsa/rest/externo/showroom/terceiros')
+
+
+
+====== colinha
+
+== _form.html.erb
+<%= form_for @cliente, :html => { :class => 'form-horizontal', :multipart => true } do |f| %>
+  <div class="control-group">
+    <%= f.label :vpsa_id, :class => 'control-label' %>
+    <div class="controls">
+			<% terceiros = @terceiros.map { |terceiro| [terceiro['nome'], terceiro['id']] } %>
+			<%= f.select :vpsa_id, options_for_select(terceiros)  %>
+    </div>
+  </div>
+  <div class="control-group">
+    <%= f.label :foto, :class => 'control-label' %>
+    <div class="controls">
+      <%= f.file_field :foto, :class => 'text_field' %>
+    </div>
+  </div>
+
+  <div class="form-actions">
+    <%= f.submit nil, :class => 'btn btn-primary' %>
+    <%= link_to t('.cancel', :default => t("helpers.links.cancel")),
+                clientes_path, :class => 'btn' %>
+  </div>
+<% end %>

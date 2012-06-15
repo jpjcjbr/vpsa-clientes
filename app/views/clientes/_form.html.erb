@@ -1,0 +1,21 @@
+<%= form_for @cliente, :html => { :class => 'form-horizontal', :multipart => true } do |f| %>
+  <div class="control-group">
+    <%= f.label :vpsa_id, :class => 'control-label' %>
+    <div class="controls">
+			<% terceiros = @terceiros.map { |terceiro| [terceiro['nome'], terceiro['id']] } %>
+			<%= f.select :vpsa_id, options_for_select(terceiros)  %>
+    </div>
+  </div>
+  <div class="control-group">
+    <%= f.label :foto, :class => 'control-label' %>
+    <div class="controls">
+      <%= f.file_field :foto, :class => 'text_field' %>
+    </div>
+  </div>
+
+  <div class="form-actions">
+    <%= f.submit nil, :class => 'btn btn-primary' %>
+    <%= link_to t('.cancel', :default => t("helpers.links.cancel")),
+                clientes_path, :class => 'btn' %>
+  </div>
+<% end %>
